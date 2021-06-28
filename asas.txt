@@ -1,0 +1,135 @@
+import { LitElement, html, css, styleMap } from "lit-element";
+
+
+
+export class MySearch extends LitElement {
+  static properties = {
+    namesArr: { type: Array },
+    value: { type: String},
+    result: {type: Array},
+    item: {type: String}
+  };
+
+  static styles = css`
+    * {
+      font-size: 1.2rem;
+    }
+
+    .container{
+      position: relative;
+      display: inline-block;
+      width: 300px;
+      overflow-x: hidden;
+      background-color: #DEDFDF;
+      border-radius: 10px;
+    }
+
+    .search {
+      border: none;
+      border-radius: 10px;
+      background-color: #f1f1f1;
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      outline: none;
+      border: 1px solid #5573FA;
+    }
+    
+    .search:focus{
+      border: 2px solid #5573FA;
+      outline: none;
+    }
+    ul{
+      
+      border-radius: 10px;
+      margin: 0.3rem;
+      padding: 0 0 0.2rem 0;
+      cursor: pointer; 
+      border: 1px solid #5573FA;
+      overflow: hidden;
+      background-color: #f1f1f1;
+      
+    }
+    
+    ul li{
+      list-style:none;
+      border-radius: 3px;
+      padding: 0.5rem 10px;
+     
+    }
+
+    ul li:hover{
+      border-radius: 10px;
+      background: #1F506B;
+      color: #ECF1F3;
+      font-size: 1.3rem;
+    }
+    
+  `;
+
+  constructor() {
+    super();
+    this.value = '';
+    this.namesArr = [{userName:'Adrian'},
+                    {userName:'Danny'},
+                    {userName:'Carlos'},
+                    {userName:'Juan'},
+                    {userName:'Diego'}];
+    this.result = this.namesArr.userName;
+    this.display = 'none';
+  }
+
+  get myInput() {
+    return this.renderRoot.querySelector('#myInput');
+  }
+
+  get myItem(){
+    return this.renderRoot.querySelector('li');
+  }
+  
+
+  search(){
+    this.value = this.myInput?.value;
+    this.value ? this.display= "bloque" :this.display= "none";
+    const myValues = this.namesArr?.map(({userName}) => userName.toLowerCase());
+    
+    this.result = myValues?.filter(res => res.includes(this.value.toLowerCase()));
+    if(this.result == ''){
+      this.result =  ['No found result...'];
+    }
+  }
+
+  blur(){
+    this.result = [];
+    this.display="none";
+  }
+
+  selectedItem(e){
+    e.target?.matches("li")
+    ? this.item = this.myItem.textContent
+    : this.item = 'hola';
+
+    this.myInput.value = this.item
+  }
+  
+
+       // <ul>${this.result?.map(name => html`<li>${name.toUpperCase()}</li>`)}</ul>
+
+  render() {
+    
+    return html`
+      <div id="container" class="container" @click=${()=> console.log(this)} >
+        <input class="search" id="myInput" type="search"
+         .value=${this.value} placeholder="Search..."
+          @input=${this.search} @blur=${this.blur} @focus=${this.search}>
+        <ul style="display: ${this.display}"   >
+          ${this.result?.map(name => html`<li>${name}</li>`)}
+        </ul>
+        
+        
+      </div>
+    `;
+  }
+}
+
+customElements.define("my-search", MySearch);
